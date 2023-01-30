@@ -2,12 +2,12 @@
 
 
 Rigidbody::Rigidbody(ShapeType shapeID, glm::vec2 position,
-	glm::vec2 velocity, float oriantation, float mass) : PhysicsObject(shapeID)
+	glm::vec2 velocity, float orientation, float mass) : PhysicsObject(m_shapeID)
 {
 	m_shapeID = shapeID;
 	m_position = position;
 	m_velocity = velocity;
-	m_orientation = oriantation;
+	m_orientation = orientation;
 	m_mass = mass;
 }
 

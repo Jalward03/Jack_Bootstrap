@@ -30,7 +30,7 @@ bool PhysicsApp::startup() {
 
 	m_physicsScene = new PhysicsScene();
 	m_physicsScene->SetGravity(glm::vec2(0, 0));
-	m_physicsScene->SetTimeStep(0.01);
+	m_physicsScene->SetTimeStep(0.01f);
 
 	
 
@@ -84,7 +84,7 @@ void PhysicsApp::draw() {
 void PhysicsApp::DemoStartUp(int num)
 {
 #ifdef NewtonsFirstLaw
-	m_physicsScene->SetGravity(glm::vec2(0));
+	m_physicsScene->SetGravity(glm::vec2(0, 0));
 	Circle* ball;
 	ball = new Circle(glm::vec2(-40, 0), glm::vec2(10, 30), 3.f, 1, glm::vec4(1, 0, 0, 1));
 	m_physicsScene->AddActor(ball);
