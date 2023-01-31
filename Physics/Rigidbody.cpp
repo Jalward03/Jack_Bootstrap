@@ -4,7 +4,6 @@
 Rigidbody::Rigidbody(ShapeType shapeID, glm::vec2 position,
 	glm::vec2 velocity, float orientation, float mass) : PhysicsObject(m_shapeID)
 {
-	m_shapeID = shapeID;
 	m_position = position;
 	m_velocity = velocity;
 	m_orientation = orientation;
@@ -23,8 +22,10 @@ void Rigidbody::FixedUpdate(glm::vec2 gravity, float timeStep)
 
 void Rigidbody::ApplyForce(glm::vec2 force)
 {
+	m_velocity += force / m_mass;
 }
 
 void Rigidbody::ApplyForceToActor(Rigidbody* actor2, glm::vec2 force)
 {
+	actor2->m_velocity += force;
 }

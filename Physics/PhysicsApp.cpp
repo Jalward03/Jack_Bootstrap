@@ -5,6 +5,7 @@
 #include "Gizmos.h"
 #include "Demos.h"
 #include "Circle.h"
+#include "Plane.h"
 
 #include "PhysicsScene.h"
 
@@ -89,10 +90,69 @@ void PhysicsApp::DemoStartUp(int num)
 	ball = new Circle(glm::vec2(-40, 0), glm::vec2(10, 30), 3.f, 1, glm::vec4(1, 0, 0, 1));
 	m_physicsScene->AddActor(ball);
 #endif // NewtonsFirstLaw
+
+#ifdef NewtonsSecondLaw
+	m_physicsScene->SetGravity(glm::vec2(0, -10));
+	Circle* ball;
+	ball = new Circle(glm::vec2(-40, 0), glm::vec2(10, 30), 3.f, 1, glm::vec4(1, 0, 0, 1));
+	m_physicsScene->AddActor(ball);
+
+#endif // NewtonsSecondLaw
+#ifdef NewtonsThirdLaw
+	m_physicsScene->SetGravity(glm::vec2(0, 0));  // turn off gravity
+
+	Circle* ball1 = new Circle(glm::vec2(-8, 0), glm::vec2(0, 0), 4.0f, 4, glm::vec4(1, 0, 0, 1));
+	Circle* ball2 = new Circle(glm::vec2(8, 0), glm::vec2(0, 0), 4.0f, 4, glm::vec4(0, 1, 0, 1));
+
+	m_physicsScene->AddActor(ball1);
+	m_physicsScene->AddActor(ball2);
+
+	ball1->ApplyForceToActor(ball2, glm::vec2(-2, 0));
+#endif // NewtonsThirdLaw
+
+#ifdef SimulatingCollision
+	m_physicsScene->SetGravity(glm::vec2(0, 0));  // turn off gravity
+
+	Circle* ball1 = new Circle(glm::vec2(-20, 0), glm::vec2(0, 0), 4.f, 4, glm::vec4(1, 0, 0, 1));
+	Circle* ball2 = new Circle(glm::vec2(10, 0), glm::vec2(0, 0), 4.0, 4, glm::vec4(0, 1, 0, 1));
+
+	m_physicsScene->AddActor(ball1);
+	m_physicsScene->AddActor(ball2);
+
+	ball1->ApplyForce(glm::vec2(30, 0));
+	ball2->ApplyForce(glm::vec2(-15, 0));
+#endif // SimulatingCollision
+
+#ifdef SimulatingRocket
+
+	m_physicsScene->SetGravity(glm::vec2(0, 0));
+	
+	Circle* ball = new Circle(glm::vec2(0, -40), glm::vec2(0, 0), 1000, 15, glm::vec4(1, 0, 0, 1));
+
+	m_physicsScene->AddActor(ball);
+	ball->ApplyForce(glm::vec2(0, 20));
+
+#endif // SimulatingRocket
 }
 
 void PhysicsApp::DemoUpdates(aie::Input* input, float dt)
 {
+#ifdef SimulatingRocket
+
+	Circle* ball = new Circle(m_physicsScene->GetRocket()->GetPoisition(),
+		m_physicsScene->GetRocket()->GetVelocity(),
+		m_physicsScene->GetRocket()->GetMass(),
+		m_physicsScene->GetRocket()->GetRadius(),
+		m_physicsScene->GetColor());
+
+#endif
+
+#ifdef Planes
+	m_physicsScene->SetGravity(glm::vec2(0, -9.82));
+	Plane* plane = new Plane(glm::vec2(0, 1), -30);
+	m_physicsScene->AddActor(plane);
+
+#endif // Planes
 }
 
 float PhysicsApp::DegreeToRadian(float degree)

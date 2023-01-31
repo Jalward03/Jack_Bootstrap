@@ -2,6 +2,12 @@
 
 #define PI 3.14159265359
 
-#define NewtonsFirstLaw
+//#define NewtonsFirstLaw
+//#define NewtonsSecondLaw
+//#define NewtonsThirdLaw
 
-#define SimulatingRocket
+//#define SimulatingCollision
+
+//#define SimulatingRocket
+
+#define Planes

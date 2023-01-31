@@ -16,12 +16,12 @@ public:
 	void ApplyForceToActor(Rigidbody* actor2, glm::vec2 force);
 
 	//Getters
-	glm::vec2 GetPoisition() { return m_position; }
+	glm::vec2 GetPosition() { return m_position; }
 	float GetOrientation() { return m_orientation;}
 	glm::vec2 GetVelocity() { return m_velocity; }
 	float GetMass() { return m_mass; }
 	//Setters
-
+	void SetVelocity(glm::vec2 vel) { m_velocity = vel; }
 protected:
 	glm::vec2 m_position;
 	glm::vec2 m_velocity;
