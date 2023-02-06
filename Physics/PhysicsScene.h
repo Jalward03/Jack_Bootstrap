@@ -21,18 +21,19 @@ public:
 
 
 	static bool Plane2Plane(PhysicsObject*, PhysicsObject*);
-	//static bool Plane2Circle(PhysicsObject*, PhysicsObject*);
-	//static bool Plane2Box(PhysicsObject*, PhysicsObject*);
+	static bool Plane2Circle(PhysicsObject*, PhysicsObject*);
+	static bool Plane2Box(PhysicsObject*, PhysicsObject*);
 	static bool Circle2Plane(PhysicsObject*, PhysicsObject*);
 	static bool Circle2Circle(PhysicsObject*, PhysicsObject*);
-	//static bool Sphere2Box(PhysicsObject*, PhysicsObject*);
-	//static bool Box2Plane(PhysicsObject*, PhysicsObject*);
-	//static bool Box2Sphere(PhysicsObject*, PhysicsObject*);
-	//static bool Box2Box(PhysicsObject*, PhysicsObject*);
+	static bool Circle2Box(PhysicsObject*, PhysicsObject*);
+	static bool Box2Plane(PhysicsObject*, PhysicsObject*);
+	static bool Box2Circle(PhysicsObject*, PhysicsObject*);
+	static bool Box2Box(PhysicsObject*, PhysicsObject*);
 
 	//Getters
-	glm::vec2 GetGravity() { return m_gravity; }
+	static glm::vec2 GetGravity() { return m_gravity; }
 	float GetTimeStep() { return m_timeStep; }
+	float GetTotalEnergy();
 	Circle* GetRocket() { return m_rocket; }
 
 	//Setters
@@ -49,7 +50,7 @@ protected:
 	
 
 private:
-	glm::vec2 m_gravity;
+	static glm::vec2 m_gravity;
 	float m_timeStep;
 	std::vector<PhysicsObject*> m_actors;
 	Circle* m_rocket;

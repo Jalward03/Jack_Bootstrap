@@ -4,6 +4,8 @@
 #include "Plane.h"
 #include <glm/glm.hpp>
 
+glm::vec2 PhysicsScene::m_gravity(0, 0);
+
 PhysicsScene::PhysicsScene()
 {
 	m_timeStep = 0.01f;
@@ -32,8 +34,9 @@ typedef bool(*fn)(PhysicsObject*, PhysicsObject*);
 
 static fn collisionFunctionArray[] =
 {
-	PhysicsScene::Plane2Plane,
-	PhysicsScene::Circle2Plane, PhysicsScene::Circle2Circle, 
+	PhysicsScene::Plane2Plane, PhysicsScene::Plane2Circle, PhysicsScene::Plane2Box,
+	PhysicsScene::Circle2Plane,  PhysicsScene::Circle2Circle,  PhysicsScene::Circle2Box,
+	PhysicsScene::Box2Plane,  PhysicsScene::Box2Circle,  PhysicsScene::Box2Box
 };
 
 void PhysicsScene::Update(float dt)
@@ -70,7 +73,6 @@ void PhysicsScene::Update(float dt)
 					collisionFunctionPtr(object1, object2);
 				}
 
-				Circle2Circle(object1, object2);
 			}
 		}
 	}
@@ -89,6 +91,16 @@ bool PhysicsScene::Plane2Plane(PhysicsObject* ob1, PhysicsObject* obj2)
 	return false;
 }
 
+bool PhysicsScene::Plane2Circle(PhysicsObject* obj1, PhysicsObject* obj2)
+{
+	return  PhysicsScene::Circle2Plane(obj2, obj1);
+}
+
+bool PhysicsScene::Plane2Box(PhysicsObject*, PhysicsObject*)
+{
+	return false;
+}
+
 bool PhysicsScene::Circle2Plane(PhysicsObject* obj1, PhysicsObject* obj2)
 {
 	Circle* circle = dynamic_cast<Circle*>(obj1);
@@ -101,10 +113,13 @@ bool PhysicsScene::Circle2Plane(PhysicsObject* obj1, PhysicsObject* obj2)
 
 		float intersection = circle->GetRadius() - sphereToPlane;
 		float velocityOutOfPlane = glm::dot(circle->GetVelocity(), plane->GetNormal());
+		glm::vec2 contact = circle->GetPosition() + (collisionNormal * -circle->GetRadius());
+
 		if (intersection > 0 && velocityOutOfPlane < 0)
 		{
 			//set Circle velocity to zero here
-			circle->ApplyForce(-circle->GetVelocity() * circle->GetMass());
+
+			plane->ResolveCollision(circle, contact);
 			return true;
 		}
 	}
@@ -121,12 +136,43 @@ bool PhysicsScene::Circle2Circle(PhysicsObject* obj1, PhysicsObject* obj2)
 	{
 		if (circle1->GetRadius() + circle2->GetRadius() > glm::distance(circle1->GetPosition(), circle2->GetPosition()))
 		{
-			circle1->ApplyForceToActor(circle2, -circle2->GetVelocity());
-			circle2->ApplyForceToActor(circle1, -circle2->GetVelocity());
+			circle1->ResolveCollision(circle2, 0.5f * (circle1->GetPosition() + circle2->GetPosition()));
 
 			return true;
 		}
 		
 	}
 	return false;
+}
+
+bool PhysicsScene::Circle2Box(PhysicsObject*, PhysicsObject*)
+{
+	return false;
+}
+
+bool PhysicsScene::Box2Plane(PhysicsObject*, PhysicsObject*)
+{
+	return false;
+}
+
+bool PhysicsScene::Box2Circle(PhysicsObject*, PhysicsObject*)
+{
+	return false;
+}
+
+bool PhysicsScene::Box2Box(PhysicsObject*, PhysicsObject*)
+{
+	return false;
+}
+
+float PhysicsScene::GetTotalEnergy()
+{
+	float total = 0;
+
+	for (auto it = m_actors.begin(); it != m_actors.end(); it++)
+	{
+		PhysicsObject* obj = *it;
+		total += obj->GetEnergy();
+	}
+	return total;
 }

@@ -10,4 +10,5 @@
 
 //#define SimulatingRocket
 
-#define Planes
+//#define Circle2PlaneCollision
+#define NewtonsCradle

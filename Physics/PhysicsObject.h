@@ -3,7 +3,7 @@
 
 enum ShapeType {
 
-	PLANE = 0,
+	PLANE,
 	CIRCLE,
 	BOX
 };
@@ -16,6 +16,7 @@ public:
 	virtual void FixedUpdate(glm::vec2 gravity, float timeStep) = 0;
 	virtual void Draw(float alpha) = 0;
 	virtual void ResetPosition() {};
+	virtual float GetEnergy() { return 0; }
 
 	ShapeType GetShapeID() { return m_shapeID; }
 

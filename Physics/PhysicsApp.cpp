@@ -133,10 +133,6 @@ void PhysicsApp::DemoStartUp(int num)
 	ball->ApplyForce(glm::vec2(0, 20));
 
 #endif // SimulatingRocket
-}
-
-void PhysicsApp::DemoUpdates(aie::Input* input, float dt)
-{
 #ifdef SimulatingRocket
 
 	Circle* ball = new Circle(m_physicsScene->GetRocket()->GetPoisition(),
@@ -146,13 +142,48 @@ void PhysicsApp::DemoUpdates(aie::Input* input, float dt)
 		m_physicsScene->GetColor());
 
 #endif
-
-#ifdef Planes
+#ifdef Circle2PlaneCollision
 	m_physicsScene->SetGravity(glm::vec2(0, -9.82));
+
+	Circle* ball1 = new Circle(glm::vec2(-20, 0), glm::vec2(0), 4.0f, 4, glm::vec4(1, 0, 0, 1));
+	Circle* ball2 = new Circle(glm::vec2(10, 0), glm::vec2(0), 4.0f, 4, glm::vec4(0, 1, 0, 1));
+
 	Plane* plane = new Plane(glm::vec2(0, 1), -30);
+	m_physicsScene->AddActor(ball1);
+	m_physicsScene->AddActor(ball2);
 	m_physicsScene->AddActor(plane);
 
-#endif // Planes
+#endif // Circle2PlaneCollision
+
+#ifdef NewtonsCradle
+	m_physicsScene->SetGravity(glm::vec2(0, 0));
+
+	Circle* ball1 = new Circle(glm::vec2(-16, 0), glm::vec2(0), 2.0f, 4, glm::vec4(1, 0, 0, 1));
+	Circle* ball2 = new Circle(glm::vec2(-8, 0), glm::vec2(0), 2.0f, 4, glm::vec4(1, 0.64, 0, 1));
+	Circle* ball3 = new Circle(glm::vec2(0, 0), glm::vec2(0), 2.0f, 4, glm::vec4(1, 1, 0, 1));
+	Circle* ball4 = new Circle(glm::vec2(8, 0), glm::vec2(0), 2.0f, 4, glm::vec4(0, 1, 0, 1));
+	Circle* ball5 = new Circle(glm::vec2(16, 0), glm::vec2(0), 2.0f, 4, glm::vec4(1, 0, 1, 1));
+
+	Plane* plane1 = new Plane(glm::vec2(1, 0), -40);
+	Plane* plane2 = new Plane(glm::vec2( -1, 0), -40);
+	m_physicsScene->AddActor(ball1);
+	m_physicsScene->AddActor(ball2);
+	m_physicsScene->AddActor(ball3);
+	m_physicsScene->AddActor(ball4);
+	m_physicsScene->AddActor(ball5);
+
+	m_physicsScene->AddActor(plane1);
+	m_physicsScene->AddActor(plane2);
+
+	ball1->ApplyForce(glm::vec2(-100, 0), glm::vec2(0));
+#endif // Circle2PlaneCollision
+}
+
+void PhysicsApp::DemoUpdates(aie::Input* input, float dt)
+{
+
+
+
 }
 
 float PhysicsApp::DegreeToRadian(float degree)
