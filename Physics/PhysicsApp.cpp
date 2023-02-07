@@ -6,6 +6,7 @@
 #include "Demos.h"
 #include "Circle.h"
 #include "Plane.h"
+#include "Box.h"
 
 #include "PhysicsScene.h"
 
@@ -164,6 +165,7 @@ void PhysicsApp::DemoStartUp(int num)
 	Circle* ball4 = new Circle(glm::vec2(8, 0), glm::vec2(0), 2.0f, 4, glm::vec4(0, 1, 0, 1));
 	Circle* ball5 = new Circle(glm::vec2(16, 0), glm::vec2(0), 2.0f, 4, glm::vec4(1, 0, 1, 1));
 
+
 	Plane* plane1 = new Plane(glm::vec2(1, 0), -40);
 	Plane* plane2 = new Plane(glm::vec2( -1, 0), -40);
 	m_physicsScene->AddActor(ball1);
@@ -172,18 +174,147 @@ void PhysicsApp::DemoStartUp(int num)
 	m_physicsScene->AddActor(ball4);
 	m_physicsScene->AddActor(ball5);
 
+
 	m_physicsScene->AddActor(plane1);
 	m_physicsScene->AddActor(plane2);
 
 	ball1->ApplyForce(glm::vec2(-100, 0), glm::vec2(0));
 #endif // Circle2PlaneCollision
+
+#ifdef Box2PlaneCollision
+	m_physicsScene->SetGravity(glm::vec2(0, -9));
+
+	//Circle* ball3 = new Circle(glm::vec2(20, 0), glm::vec2(0), 2.0f, 4, glm::vec4(1, 1, 0, 1));
+
+	Box* box = new Box(glm::vec2(20, 20), 10.f, 10.f, 0, glm::vec2(0), 4.0f, glm::vec4(1, 0, 0, 1));
+	Box* box2 = new Box(glm::vec2(20, 60), 10.f, 10.f, 0, glm::vec2(0), 4.0f, glm::vec4(0, 1, 0, 1));
+
+	Plane* plane = new Plane(glm::vec2(0, 1), -30);
+
+	m_physicsScene->AddActor(box);
+	//m_physicsScene->AddActor(ball3);
+	m_physicsScene->AddActor(box2);
+	m_physicsScene->AddActor(plane);
+#endif
+
+#ifdef Pit
+	m_physicsScene->SetGravity(glm::vec2(0, -9));
+
+	Plane* plane1 = new Plane(glm::vec2(0.9, 1), -25);
+	Plane* plane2 = new Plane(glm::vec2(-0.9, 1), -25);
+
+	Box* box1 = new Box(glm::vec2(20, 20), 5.f, 5.f, 20, glm::vec2(0), 4.0f, glm::vec4(1, 0, 0, 1));
+	Box* box2 = new Box(glm::vec2(-20, 20), 5.f, 5.f, 0, glm::vec2(0), 4.0f, glm::vec4(0, 1, 0, 1));
+
+	Circle* ball1 = new Circle(glm::vec2(10, 0), glm::vec2(0), 2.0f, 4, glm::vec4(1, 0.6, 0, 1));
+	Circle* ball2 = new Circle(glm::vec2(-10, 10), glm::vec2(0), 2.0f, 4, glm::vec4(0, 0, 1, 1));
+	
+
+	m_physicsScene->AddActor(ball1);
+	m_physicsScene->AddActor(ball2)
+		;
+	m_physicsScene->AddActor(box1);
+	m_physicsScene->AddActor(box2);
+
+	m_physicsScene->AddActor(plane1);
+	m_physicsScene->AddActor(plane2);
+
+#endif
+
+#ifdef PoolTest
+	m_physicsScene->SetGravity(glm::vec2(0, 0));
+
+	float ballMass = 2.0f;
+
+	Plane* plane1 = new Plane(glm::vec2(1, 0), -75);
+	Plane* plane2 = new Plane(glm::vec2(-1, 0), -75);
+	Plane* plane3 = new Plane(glm::vec2(0, -1), -40);
+	Plane* plane4 = new Plane(glm::vec2(0, 1), -40);
+
+	Circle* whiteBall = new Circle(glm::vec2(40, 0), glm::vec2(0), 1.75f, 3.5f, glm::vec4(1, 1, 1, 1));
+
+
+	Circle* ball1 = new Circle(glm::vec2(-15, 0), glm::vec2(0), ballMass, 4, glm::vec4(0, 1, 0, 1));
+
+	Circle* ball2 = new Circle(glm::vec2(-23, 4.1), glm::vec2(0), ballMass, 4, glm::vec4(0, 1, 0, 1));
+	Circle* ball3 = new Circle(glm::vec2(-23, -4.1), glm::vec2(0), ballMass, 4, glm::vec4(0, 1, 0, 1));
+
+	Circle* ball4 = new Circle(glm::vec2(-31, 0), glm::vec2(0), ballMass, 4, glm::vec4(0, 1, 0, 1));
+	Circle* ball5 = new Circle(glm::vec2(-31, -8.2), glm::vec2(0), ballMass, 4, glm::vec4(0, 1, 0, 1));
+	Circle* ball6 = new Circle(glm::vec2(-31, 8.2), glm::vec2(0), ballMass, 4, glm::vec4(0, 1, 0, 1));
+
+	Circle* ball7 = new Circle(glm::vec2(-39, 12.3), glm::vec2(0), ballMass, 4, glm::vec4(0, 1, 0, 1));
+	Circle* ball8 = new Circle(glm::vec2(-39, 4.1), glm::vec2(0), ballMass, 4, glm::vec4(0, 1, 0, 1));
+	Circle* ball9 = new Circle(glm::vec2(-39, -4.1), glm::vec2(0), ballMass, 4, glm::vec4(0, 1, 0, 1));
+	Circle* ball10 = new Circle(glm::vec2(-39, -12.3), glm::vec2(0), ballMass, 4, glm::vec4(0, 1, 0, 1));
+
+	Circle* ball11 = new Circle(glm::vec2(-47, 16.4), glm::vec2(0), ballMass, 4, glm::vec4(0, 1, 0, 1));
+	Circle* ball12 = new Circle(glm::vec2(-47, -8.2), glm::vec2(0), ballMass, 4, glm::vec4(0, 1, 0, 1));
+	Circle* ball13 = new Circle(glm::vec2(-47, 0), glm::vec2(0), ballMass, 4, glm::vec4(0, 1, 0, 1));
+	Circle* ball14 = new Circle(glm::vec2(-47, 8.2), glm::vec2(0), ballMass, 4, glm::vec4(0, 1, 0, 1));
+	Circle* ball15 = new Circle(glm::vec2(-47, -16.4), glm::vec2(0), ballMass, 4, glm::vec4(0, 1, 0, 1));
+
+
+
+	m_physicsScene->AddActor(plane1);
+	m_physicsScene->AddActor(plane2);
+	m_physicsScene->AddActor(plane3);
+	m_physicsScene->AddActor(plane4);
+
+	m_physicsScene->AddActor(whiteBall);
+
+	m_physicsScene->AddActor(ball1);
+
+	m_physicsScene->AddActor(ball2);
+	m_physicsScene->AddActor(ball3);
+
+	m_physicsScene->AddActor(ball4);
+	m_physicsScene->AddActor(ball5);
+	m_physicsScene->AddActor(ball6);
+
+
+	m_physicsScene->AddActor(ball7);
+	m_physicsScene->AddActor(ball8);
+	m_physicsScene->AddActor(ball9);
+	m_physicsScene->AddActor(ball10);
+
+	m_physicsScene->AddActor(ball11);
+	m_physicsScene->AddActor(ball12);
+	m_physicsScene->AddActor(ball13);
+	m_physicsScene->AddActor(ball14);
+	m_physicsScene->AddActor(ball15);
+
+	
+	whiteBall->ApplyForce(glm::vec2(-700, -700), glm::vec2(0));
+
+
+#endif
+
+#ifdef BouncePad
+
+	m_physicsScene->SetGravity(glm::vec2(0, -9));
+
+
+	Circle* ball1 = new Circle(glm::vec2(0, 20), glm::vec2(0), 4.0f, 4, glm::vec4(0, 1, 0, 1));
+	Box* box1 = new Box(glm::vec2(0, -40), 100.f, 10.f, 0, glm::vec2(0), 4.0f, glm::vec4(1, 0, 0, 1));
+	box1->SetKinematic(true);
+
+
+	m_physicsScene->AddActor(ball1);
+	m_physicsScene->AddActor(box1);
+#endif
 }
+
 
 void PhysicsApp::DemoUpdates(aie::Input* input, float dt)
 {
+#ifdef PoolTest
+	if (input->isKeyDown(aie::INPUT_KEY_SPACE))
+	{
 
+	}
 
-
+#endif
 }
 
 float PhysicsApp::DegreeToRadian(float degree)

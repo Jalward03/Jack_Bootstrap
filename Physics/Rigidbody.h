@@ -13,20 +13,28 @@ public:
 	virtual void FixedUpdate(glm::vec2 gravity, float timeStep);
 
 	void ApplyForce(glm::vec2 force, glm::vec2 pos);
-	void ResolveCollision(Rigidbody* actor2, glm::vec2 contact, glm::vec2* collisionNormal=nullptr);
+	void ResolveCollision(Rigidbody* actor2, glm::vec2 contact, glm::vec2* collisionNormal=nullptr, float pen = 0);
 	float GetPotentialEnergy();
 	void CalculateSmoothedPosition(float alpha);
 
 	float GetEnergy() override;
-	float GetKinematicEnergy();
+	float GetKineticEnergy();
 	//Getters
-	glm::vec2 GetPosition() { return m_position; }
+	glm::vec2 GetPosition() const { return m_position; }
 	float GetOrientation() { return m_orientation; }
+	float GetElasticity() { return m_elasticity; }
+	float GetAngularVelocity() { return m_angularVelocity; }
 	glm::vec2 GetVelocity() { return m_velocity; }
-	float GetMass() { return m_mass; }
-	float GetMoment() { return m_moment; }
+	float GetMass() { return m_isKinematic ? INT_MAX : m_mass; }
+	float GetMoment() { return m_isKinematic ? INT_MAX : m_moment; }
 	//Setters
 	void SetVelocity(glm::vec2 vel) { m_velocity = vel; }
+	void SetPosition(glm::vec2 pos) { m_position = pos; }
+	void CalculateAxes();
+
+	void SetKinematic(bool state) { m_isKinematic = state; }
+	bool IsKinematic() { return m_isKinematic; }
+
 protected:
 	glm::vec2 m_position;
 	glm::vec2 m_velocity;
@@ -43,4 +51,14 @@ protected:
 	glm::vec2 m_smoothedPosition;
 	glm::vec2 m_smoothedLocalX;
 	glm::vec2 m_smoothedLocalY;
+
+	glm::vec2 m_localX;
+	glm::vec2 m_localY;
+
+	float m_elasticity;
+	float m_linearDrag;
+	float m_angularDrag;
+
+	bool m_isKinematic;
+
 };

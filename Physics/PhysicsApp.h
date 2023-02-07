@@ -21,6 +21,8 @@ public:
 	virtual void update(float deltaTime);
 	virtual void draw();
 
+	void LaunchBall();
+
 protected:
 
 	aie::Renderer2D*	m_2dRenderer;

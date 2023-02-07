@@ -16,9 +16,11 @@ public:
 
 	glm::vec2 GetNormal() { return m_normal; }
 	float GetDistance() { return m_distanceToOrigin; }
+	float GetElasticity() { return m_elasticity; }
 
 
 protected:
+	float m_elasticity;
 	glm::vec2 m_normal;
 	glm::vec4 m_colour;
 	float m_distanceToOrigin;
