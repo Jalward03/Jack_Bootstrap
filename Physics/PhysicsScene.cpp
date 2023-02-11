@@ -66,7 +66,8 @@ void PhysicsScene::Update(float dt)
 				PhysicsObject* object2 = m_actors[inner];
 				int shapeId1 = object1->GetShapeID();
 				int shapeId2 = object2->GetShapeID();
-
+				if (shapeId1 < 0 || shapeId2 < 0)
+					continue;
 				int functionIdx = (shapeId1 * SHAPE_COUNT) + shapeId2;
 				fn collisionFunctionPtr = collisionFunctionArray[functionIdx];
 				if (collisionFunctionPtr != nullptr)

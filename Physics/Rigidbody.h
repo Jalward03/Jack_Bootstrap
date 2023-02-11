@@ -35,6 +35,8 @@ public:
 	void SetKinematic(bool state) { m_isKinematic = state; }
 	bool IsKinematic() { return m_isKinematic; }
 
+	glm::vec2 ToWorld(glm::vec2 contact);
+
 protected:
 	glm::vec2 m_position;
 	glm::vec2 m_velocity;

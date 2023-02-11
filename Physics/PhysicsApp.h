@@ -21,7 +21,7 @@ public:
 	virtual void update(float deltaTime);
 	virtual void draw();
 
-	void LaunchBall();
+	void Rope(int num);
 
 protected:
 

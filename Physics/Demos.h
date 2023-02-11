@@ -17,7 +17,10 @@
 //#define NewtonsCradle
 //#define Box2PlaneCollision
 //#define Pit
-#define BouncePad
+//#define BouncePad
 
 //#define PoolTest
+//#define SpringTest
+
+
 

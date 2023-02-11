@@ -7,6 +7,7 @@
 #include "Circle.h"
 #include "Plane.h"
 #include "Box.h"
+#include "Spring.h"
 
 #include "PhysicsScene.h"
 
@@ -23,7 +24,7 @@ PhysicsApp::~PhysicsApp() {
 bool PhysicsApp::startup() {
 	//increase the 2D line count to maximise the objects we can draw
 	aie::Gizmos::create(225U, 225U, 65535U, 65535U);
-	
+
 	m_2dRenderer = new aie::Renderer2D();
 
 	// TODO: remember to change this when redistributing a build!
@@ -34,7 +35,7 @@ bool PhysicsApp::startup() {
 	m_physicsScene->SetGravity(glm::vec2(0, 0));
 	m_physicsScene->SetTimeStep(0.01f);
 
-	
+
 
 	DemoStartUp(1);
 
@@ -83,6 +84,27 @@ void PhysicsApp::draw() {
 	m_2dRenderer->end();
 }
 
+void PhysicsApp::Rope(int num)
+{
+	m_physicsScene->SetGravity(glm::vec2(0, -9.82f));
+
+	Circle* prev = nullptr;
+	for (int i = 0; i < num; i++)
+	{
+		Circle* circle = new Circle(glm::vec2(i * 3, 30 - i * 5), glm::vec2(0), 10, 2, glm::vec4(1, 0, 0, 1));
+		if (i == 0)
+			circle->SetKinematic(true);
+		m_physicsScene->AddActor(circle);
+		if (prev)
+			m_physicsScene->AddActor(new Spring(circle, prev, 500, 10, 7));
+		prev = circle;
+	}
+
+	Box* box = new Box(glm::vec2(0, 0), 100.f, 2.f, 0, glm::vec2(0), 4.0f, glm::vec4(1, 0.6, 0, 1));
+	box->SetKinematic(true);
+	m_physicsScene->AddActor(box);
+}
+
 void PhysicsApp::DemoStartUp(int num)
 {
 #ifdef NewtonsFirstLaw
@@ -90,15 +112,14 @@ void PhysicsApp::DemoStartUp(int num)
 	Circle* ball;
 	ball = new Circle(glm::vec2(-40, 0), glm::vec2(10, 30), 3.f, 1, glm::vec4(1, 0, 0, 1));
 	m_physicsScene->AddActor(ball);
-#endif // NewtonsFirstLaw
-
+#endif
 #ifdef NewtonsSecondLaw
 	m_physicsScene->SetGravity(glm::vec2(0, -10));
 	Circle* ball;
 	ball = new Circle(glm::vec2(-40, 0), glm::vec2(10, 30), 3.f, 1, glm::vec4(1, 0, 0, 1));
 	m_physicsScene->AddActor(ball);
 
-#endif // NewtonsSecondLaw
+#endif
 #ifdef NewtonsThirdLaw
 	m_physicsScene->SetGravity(glm::vec2(0, 0));  // turn off gravity
 
@@ -109,8 +130,7 @@ void PhysicsApp::DemoStartUp(int num)
 	m_physicsScene->AddActor(ball2);
 
 	ball1->ApplyForceToActor(ball2, glm::vec2(-2, 0));
-#endif // NewtonsThirdLaw
-
+#endif
 #ifdef SimulatingCollision
 	m_physicsScene->SetGravity(glm::vec2(0, 0));  // turn off gravity
 
@@ -122,18 +142,17 @@ void PhysicsApp::DemoStartUp(int num)
 
 	ball1->ApplyForce(glm::vec2(30, 0));
 	ball2->ApplyForce(glm::vec2(-15, 0));
-#endif // SimulatingCollision
-
+#endif
 #ifdef SimulatingRocket
 
 	m_physicsScene->SetGravity(glm::vec2(0, 0));
-	
+
 	Circle* ball = new Circle(glm::vec2(0, -40), glm::vec2(0, 0), 1000, 15, glm::vec4(1, 0, 0, 1));
 
 	m_physicsScene->AddActor(ball);
 	ball->ApplyForce(glm::vec2(0, 20));
 
-#endif // SimulatingRocket
+#endif
 #ifdef SimulatingRocket
 
 	Circle* ball = new Circle(m_physicsScene->GetRocket()->GetPoisition(),
@@ -154,8 +173,7 @@ void PhysicsApp::DemoStartUp(int num)
 	m_physicsScene->AddActor(ball2);
 	m_physicsScene->AddActor(plane);
 
-#endif // Circle2PlaneCollision
-
+#endif 
 #ifdef NewtonsCradle
 	m_physicsScene->SetGravity(glm::vec2(0, 0));
 
@@ -167,7 +185,7 @@ void PhysicsApp::DemoStartUp(int num)
 
 
 	Plane* plane1 = new Plane(glm::vec2(1, 0), -40);
-	Plane* plane2 = new Plane(glm::vec2( -1, 0), -40);
+	Plane* plane2 = new Plane(glm::vec2(-1, 0), -40);
 	m_physicsScene->AddActor(ball1);
 	m_physicsScene->AddActor(ball2);
 	m_physicsScene->AddActor(ball3);
@@ -179,8 +197,7 @@ void PhysicsApp::DemoStartUp(int num)
 	m_physicsScene->AddActor(plane2);
 
 	ball1->ApplyForce(glm::vec2(-100, 0), glm::vec2(0));
-#endif // Circle2PlaneCollision
-
+#endif 
 #ifdef Box2PlaneCollision
 	m_physicsScene->SetGravity(glm::vec2(0, -9));
 
@@ -196,7 +213,6 @@ void PhysicsApp::DemoStartUp(int num)
 	m_physicsScene->AddActor(box2);
 	m_physicsScene->AddActor(plane);
 #endif
-
 #ifdef Pit
 	m_physicsScene->SetGravity(glm::vec2(0, -9));
 
@@ -208,7 +224,7 @@ void PhysicsApp::DemoStartUp(int num)
 
 	Circle* ball1 = new Circle(glm::vec2(10, 0), glm::vec2(0), 2.0f, 4, glm::vec4(1, 0.6, 0, 1));
 	Circle* ball2 = new Circle(glm::vec2(-10, 10), glm::vec2(0), 2.0f, 4, glm::vec4(0, 0, 1, 1));
-	
+
 
 	m_physicsScene->AddActor(ball1);
 	m_physicsScene->AddActor(ball2)
@@ -220,7 +236,6 @@ void PhysicsApp::DemoStartUp(int num)
 	m_physicsScene->AddActor(plane2);
 
 #endif
-
 #ifdef PoolTest
 	m_physicsScene->SetGravity(glm::vec2(0, 0));
 
@@ -284,12 +299,11 @@ void PhysicsApp::DemoStartUp(int num)
 	m_physicsScene->AddActor(ball14);
 	m_physicsScene->AddActor(ball15);
 
-	
+
 	whiteBall->ApplyForce(glm::vec2(-700, -700), glm::vec2(0));
 
 
 #endif
-
 #ifdef BouncePad
 
 	m_physicsScene->SetGravity(glm::vec2(0, -9));
@@ -303,6 +317,21 @@ void PhysicsApp::DemoStartUp(int num)
 	m_physicsScene->AddActor(ball1);
 	m_physicsScene->AddActor(box1);
 #endif
+#ifdef SpringTest
+	PhysicsApp::Rope(5);
+
+#endif
+
+
+
+
+
+
+
+
+
+
+
 }
 
 

@@ -9,15 +9,15 @@ Rigidbody::Rigidbody(ShapeType shapeID, glm::vec2 position,
 	glm::vec2 velocity, float orientation, float mass,
 	float moment, float angularVelocity) : PhysicsObject(shapeID)
 {
-	m_linearDrag = 0.01f;
-	m_angularDrag = 0.01f;
+	m_linearDrag = 1.3f;
+	m_angularDrag = 1.3f;
 	m_position = position;
 	m_velocity = velocity;
 	m_orientation = orientation;
 	m_mass = mass;
 	m_angularVelocity = 0;
 	m_moment = 0;
-	m_elasticity = 2.0f;
+	m_elasticity = 0.8f;
 	m_isKinematic = false;
 }
 
@@ -115,6 +115,11 @@ void Rigidbody::CalculateAxes()
 	float cs = cosf(m_orientation);
 	m_localX = glm::vec2(cs, sn);
 	m_localY = glm::vec2(-sn, cs);
+}
+
+glm::vec2 Rigidbody::ToWorld(glm::vec2 contact)
+{
+	return m_position + m_localX * contact.x + m_localY * contact.y;
 }
 
 float Rigidbody::GetEnergy()

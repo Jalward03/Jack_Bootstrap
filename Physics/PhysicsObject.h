@@ -2,8 +2,8 @@
 #include<glm/vec2.hpp>
 
 enum ShapeType {
-
-	PLANE,
+	JOINT = -1,
+	PLANE = 0,
 	CIRCLE,
 	BOX
 };
