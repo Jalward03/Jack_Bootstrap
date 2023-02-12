@@ -10,6 +10,7 @@ Box::Box(glm::vec2 position, float width, float height, float orientation, glm::
 	m_colour = color;
 	m_orientation = orientation;
 	m_angularVelocity = 0;
+	m_elasticity = 3.f;
 }
 
 Box::~Box()

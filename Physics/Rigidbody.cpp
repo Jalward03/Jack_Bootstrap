@@ -9,18 +9,18 @@ Rigidbody::Rigidbody(ShapeType shapeID, glm::vec2 position,
 	glm::vec2 velocity, float orientation, float mass,
 	float moment, float angularVelocity) : PhysicsObject(shapeID)
 {
-	m_linearDrag = 1.3f;
-	m_angularDrag = 1.3f;
+	m_linearDrag = 1.f;
+	m_angularDrag = 1.f;
 	m_position = position;
 	m_velocity = velocity;
 	m_orientation = orientation;
 	m_mass = mass;
 	m_angularVelocity = 0;
 	m_moment = 0;
-	m_elasticity = 0.8f;
+	m_elasticity = 1.125f;
 	m_isKinematic = false;
+	m_isTrigger = false;
 }
-
 Rigidbody::~Rigidbody()
 {
 }
@@ -29,12 +29,7 @@ void Rigidbody::FixedUpdate(glm::vec2 gravity, float timeStep)
 {
 	Rigidbody::CalculateAxes();
 
-	if (m_isKinematic)
-	{
-		m_velocity = glm::vec2(0);
-		m_angularVelocity = 0;
-		return;
-	}
+	
 	m_lastOrientation = m_orientation;
 	m_lastPosition = m_position;
 	m_position += m_velocity * timeStep;
@@ -42,6 +37,29 @@ void Rigidbody::FixedUpdate(glm::vec2 gravity, float timeStep)
 	m_orientation += m_angularVelocity * timeStep;
 	m_velocity -= m_velocity * m_linearDrag * timeStep;
 	m_angularVelocity -= m_angularVelocity * m_angularDrag * timeStep;
+
+	if (m_isTrigger)
+	{
+		for (auto it = m_objectsInside.begin(); it != m_objectsInside.end(); it++)
+		{
+			if (std::find(m_objectsInsideThisFrame.begin(), m_objectsInsideThisFrame.end(), *it) == m_objectsInsideThisFrame.end())
+			{
+				if (triggerExit)
+					triggerExit(*it);
+				it = m_objectsInside.erase(it);
+				if (it == m_objectsInside.end())
+					break;
+			}
+		}
+	}
+	m_objectsInsideThisFrame.clear();
+
+	if (m_isKinematic)
+	{
+		m_velocity = glm::vec2(0);
+		m_angularVelocity = 0;
+		return;
+	}
 
 	if (length(m_velocity) < MIN_LINEAR_THRESHOLD)
 	{
@@ -62,6 +80,9 @@ void Rigidbody::ApplyForce(glm::vec2 force, glm::vec2 pos)
 
 void Rigidbody::ResolveCollision(Rigidbody* actor2, glm::vec2 contact, glm::vec2* collisionNormal, float pen)
 {
+	m_objectsInsideThisFrame.push_back(actor2);
+	actor2->m_objectsInsideThisFrame.push_back(this);
+
 	glm::vec2 normal = glm::normalize(collisionNormal ? *collisionNormal : actor2->GetPosition() - GetPosition());
 	glm::vec2 relativeVelocity = actor2->GetVelocity() - m_velocity;
 
@@ -85,14 +106,22 @@ void Rigidbody::ResolveCollision(Rigidbody* actor2, glm::vec2 contact, glm::vec2
 
 		glm::vec2 force = normal * j;
 
-		ApplyForce(-force, contact - m_position);
+		if (!m_isTrigger && !actor2->m_isTrigger)
+		{
+			ApplyForce(-force, contact - m_position);
 
-		actor2->ApplyForce(force, contact - actor2->GetPosition());
+			actor2->ApplyForce(force, contact - actor2->GetPosition());
 
-		//glm::vec2 force = (1.0f + elasticity) * mass1 * mass2 / (mass1 + mass2) * (v1 - v2) * normal;
+			if (collisionCallback != nullptr) collisionCallback(actor2);
+			if (actor2->collisionCallback) actor2->collisionCallback(this);
 
-
-		//actor2->ApplyForce(force, contact - actor2->GetPosition());
+		}
+		else
+		{
+			TriggerEnter(actor2);
+			actor2->TriggerEnter(this);
+		}
+		
 		if (pen > 0)
 			PhysicsScene::ApplyContactForces(this, actor2, normal, pen);
 	}
@@ -115,6 +144,17 @@ void Rigidbody::CalculateAxes()
 	float cs = cosf(m_orientation);
 	m_localX = glm::vec2(cs, sn);
 	m_localY = glm::vec2(-sn, cs);
+}
+
+
+void Rigidbody::TriggerEnter(PhysicsObject* actor2)
+{
+	if (m_isTrigger && std::find(m_objectsInside.begin(), m_objectsInside.end(), actor2) == m_objectsInside.end())
+	{
+		m_objectsInside.push_back(actor2);
+		if (triggerEnter != nullptr)
+			triggerEnter(actor2);
+	}
 }
 
 glm::vec2 Rigidbody::ToWorld(glm::vec2 contact)

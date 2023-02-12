@@ -18,6 +18,8 @@ public:
 	virtual void ResetPosition() {};
 	virtual float GetEnergy() { return 0; }
 
+	virtual bool IsInside(glm::vec2 point) { return false; };
+
 	ShapeType GetShapeID() { return m_shapeID; }
 
 protected:

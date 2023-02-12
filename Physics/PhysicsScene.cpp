@@ -277,6 +277,8 @@ float PhysicsScene::GetTotalEnergy()
 
 void PhysicsScene::ApplyContactForces(Rigidbody* body1, Rigidbody* body2, glm::vec2 norm, float pen)
 {
+	if ((body1 && body1->IsTrigger()) || (body2 && body2->IsTrigger()))
+		return;
 	float body2Mass = body2 ? body2->GetMass() : INT_MAX;
 
 	float body1Factor = body2Mass / (body1->GetMass() + body2Mass);

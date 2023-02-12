@@ -66,6 +66,9 @@ void Plane::ResolveCollision(Rigidbody* actor2, glm::vec2 contact)
 
 	actor2->ApplyForce(force, contact - actor2->GetPosition());
 
+	if (actor2->collisionCallback)
+
+		actor2->collisionCallback(this);
 	float pen = glm::dot(contact, m_normal) - m_distanceToOrigin;
 	PhysicsScene::ApplyContactForces(actor2, nullptr, m_normal, pen);
 

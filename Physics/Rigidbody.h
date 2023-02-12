@@ -2,6 +2,8 @@
 #include "PhysicsObject.h"
 
 #include <glm/glm.hpp>
+#include <functional>
+#include <list>
 
 class Rigidbody : public PhysicsObject
 {
@@ -30,12 +32,26 @@ public:
 	//Setters
 	void SetVelocity(glm::vec2 vel) { m_velocity = vel; }
 	void SetPosition(glm::vec2 pos) { m_position = pos; }
+	void SetElasticity(float elasticity) { m_elasticity = elasticity; }
 	void CalculateAxes();
-
 	void SetKinematic(bool state) { m_isKinematic = state; }
+	void SetTrigger(bool state) { m_isTrigger = state; }
+
+	
+
 	bool IsKinematic() { return m_isKinematic; }
+	bool IsTrigger() { return m_isTrigger; }
+
+	void TriggerEnter(PhysicsObject* actor2);
+
+
+	std::function<void(PhysicsObject*)> collisionCallback;
 
 	glm::vec2 ToWorld(glm::vec2 contact);
+
+	std::function<void(PhysicsObject*)> triggerEnter;
+	std::function<void(PhysicsObject*)> triggerExit;
+	
 
 protected:
 	glm::vec2 m_position;
@@ -62,5 +78,9 @@ protected:
 	float m_angularDrag;
 
 	bool m_isKinematic;
+	bool m_isTrigger;
+	std::list<PhysicsObject*> m_objectsInside;
+	std::list<PhysicsObject*> m_objectsInsideThisFrame;
+
 
 };

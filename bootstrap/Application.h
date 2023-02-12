@@ -28,7 +28,7 @@ public:
 	void clearScreen();
 
 	// sets the colour that the sceen is cleared to
-	void setBackgroundColour(float r, float g, float b, float a = 1.0f);
+	void setBackgroundColour(float r, float g, float b, float a = 0.f);
 
 	// show or hide the OS cursor
 	void setShowCursor(bool visible);
