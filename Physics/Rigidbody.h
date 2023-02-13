@@ -23,6 +23,7 @@ public:
 	float GetKineticEnergy();
 	//Getters
 	glm::vec2 GetPosition() const { return m_position; }
+	glm::vec2 GetLastPosition() const { return m_lastPosition; }
 	float GetOrientation() { return m_orientation; }
 	float GetElasticity() { return m_elasticity; }
 	float GetAngularVelocity() { return m_angularVelocity; }
@@ -36,6 +37,7 @@ public:
 	void CalculateAxes();
 	void SetKinematic(bool state) { m_isKinematic = state; }
 	void SetTrigger(bool state) { m_isTrigger = state; }
+	void SetColour(glm::vec4 colour) { m_colour = colour; }
 
 	
 
