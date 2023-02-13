@@ -38,8 +38,10 @@ protected:
 
 	aie::Renderer2D* m_2dRenderer;
 	aie::Font* m_font;
+	aie::Font* m_fontSmall;
 	aie::Texture* m_texture;
 	aie::Texture* m_whiteBallTexture;
+	aie::Texture* m_indicatorTexture;
 	
 	PhysicsScene* m_physicsScene;
 
@@ -48,7 +50,6 @@ protected:
 	const float m_extents = 100;
 	const float m_aspectRatio = 16.0f / 9.0f;
 	glm::vec2 whiteStartPos = glm::vec2(41, -9);
-	//glm::vec2 whiteStartPos = glm::vec2(0);
 
 public:
 	Circle* m_whiteBall;
@@ -59,6 +60,8 @@ public:
 	std::vector<Circle*> m_stripes;
 	std::vector<Circle*> m_solids;
 	std::vector<Circle*> m_sunk;
+	std::vector<Circle*> m_sunkSolids;
+	std::vector<Circle*> m_sunkStripes;
 	std::vector<Box*> m_kinematics;
 	std::vector<Circle*> m_holes;
 	float DegreeToRadian(float degree);
@@ -66,6 +69,7 @@ public:
 	std::string m_PlayerOneColour = "";
 	std::string m_PlayerTwoColour = "";
 
+	int m_shotsleft = 1;
 	int m_playersTurn;
 	bool m_ballTypeAssigned;
 	bool m_readyToShoot;
