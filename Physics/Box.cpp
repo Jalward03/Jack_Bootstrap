@@ -109,3 +109,4 @@ bool Box::CheckBoxCorners(const Box& box, glm::vec2& contact, int& numContacts, 
 	}
 	return res;
 }
+

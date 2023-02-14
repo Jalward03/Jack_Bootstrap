@@ -90,22 +90,18 @@ bool GameScene::startup()
 	{
 		trigger->triggerEnter = [=](PhysicsObject* other)
 		{
-			if (other == m_whiteBall)
+			if (other == m_whiteBall && !m_whiteBallSunk)
 			{
-				m_whiteBall->SetVelocity(glm::vec2(0));
-				m_whiteBall->SetPosition(whiteStartPos);
+				m_whiteBallSunk = true;
 				m_playersTurn == 1 ? m_playersTurn = 2 : m_playersTurn = 1;
 				m_shotsleft = 0;
 				m_shotsleft++;
 				m_shotsleft++;
-
-
 			}
 			if (other == m_blackBall)
 			{
 				m_blackBall->SetVelocity(glm::vec2(0));
-				m_blackBall->SetTrigger(true)
-					;
+				m_blackBall->SetTrigger(true);
 				if (m_playersTurn == 1)
 				{
 					if (m_canPlayerOneWin)
@@ -141,7 +137,7 @@ bool GameScene::startup()
 					m_sunk.push_back(solid);
 					if (m_playersTurn == 1)
 					{
-						if (m_PlayerOneColour == "Solid" && !m_ballTypeAssigned)
+						if (m_PlayerOneColour == "Solid" || !m_ballTypeAssigned)
 						{
 							m_shotsleft++;
 						}
@@ -149,7 +145,7 @@ bool GameScene::startup()
 
 					else if (m_playersTurn == 2)
 					{
-						if (m_PlayerTwoColour == "Solid" && !m_ballTypeAssigned)
+						if (m_PlayerTwoColour == "Solid" || !m_ballTypeAssigned)
 							m_shotsleft++;
 						
 					}
@@ -181,11 +177,26 @@ bool GameScene::startup()
 			}
 
 		};
-	/*	trigger->triggerExit = [=](PhysicsObject* other)
-		{
-			std::cout << "lmao" << std::endl;
-		};*/
+
 	}
+
+	m_whiteBallZone->triggerEnter = [=](PhysicsObject* other)
+	{
+		if (other == m_whiteBall)
+		{
+			m_isWhiteInZone = true;
+		}
+	};
+
+	m_whiteBallZone->triggerExit = [=](PhysicsObject* other)
+	{
+		if (other == m_whiteBall)
+		{
+			m_isWhiteInZone = false;
+		}
+
+	};
+
 
 	return true;
 }
@@ -207,7 +218,7 @@ void GameScene::update(float deltaTime)
 		sunk->SetAngularVelocity(0);
 
 	}
-
+	 
 	if (m_sunk.size() > 0 && !m_ballTypeAssigned)
 	{
 		AssignBallType();
@@ -218,10 +229,6 @@ void GameScene::update(float deltaTime)
 
 	m_physicsScene->Update(deltaTime);
 
-	//if (input->wasKeyPressed(aie::INPUT_KEY_R) && m_gameWon)
-	//{
-	//	
-	//}
 
 	if (m_sunkSolids.size() > 6)
 	{
@@ -247,7 +254,25 @@ void GameScene::update(float deltaTime)
 		}
 	}
 
-	if (input->isMouseButtonDown(0) && m_whiteBall->GetVelocity() == glm::vec2(0) && !m_gameWon)
+	if (m_whiteBallSunk)
+	{
+		m_whiteBall->SetTrigger(true);
+		glm::vec2 mousePos = glm::vec2(input->getMouseX(), input->getMouseY());
+		m_whiteBall->SetPosition(ScreenToWorld(mousePos));
+
+		if (input->wasMouseButtonPressed(1) && m_isWhiteInZone)
+		{
+			m_whiteBall->SetPosition(ScreenToWorld(mousePos));
+			m_whiteBall->SetTrigger(false);
+			m_whiteBall->SetVelocity(glm::vec2(0));
+			m_whiteBallSunk = false;
+			m_isWhiteInZone = false;
+
+
+		}
+	}
+
+	if (input->isMouseButtonDown(0) && m_whiteBall->GetVelocity() == glm::vec2(0) && !m_whiteBallSunk && !m_gameWon)
 	{
 		glm::vec2 mousePos = glm::vec2(input->getMouseX(), input->getMouseY());
 		glm::vec2 whitePos = m_whiteBall->GetPosition();
@@ -266,8 +291,9 @@ void GameScene::update(float deltaTime)
 
 	}
 
-	if (input->wasMouseButtonReleased(0) && m_whiteBall->GetVelocity() == glm::vec2(0) && !m_gameWon)
+	if (input->wasMouseButtonReleased(0) && m_whiteBall->GetVelocity() == glm::vec2(0)&& !m_whiteBallSunk && !m_gameWon)
 	{
+		m_firstShotTaken = true;
 		m_shotsleft--;
 		glm::vec2 mousePos = glm::vec2(input->getMouseX(), input->getMouseY());
 
@@ -392,8 +418,23 @@ void GameScene::draw()
 		m_2dRenderer->drawText(m_fontSmall, m_PlayerTwoColour.c_str(), 1220, 655, 1);
 
 	}
+	if (m_whiteBallSunk)
+	{
+		std::string toolTip = "Place Behind Line With RMB";
 
+		m_2dRenderer->drawText(m_fontSmall, toolTip.c_str(),
+			WorldToScreen(m_whiteBall->GetPosition()).x + 15,
+			WorldToScreen(m_whiteBall->GetPosition()).y + 15, 1);
+	}
 
+	if (!m_firstShotTaken)
+	{
+		std::string toolTip = "Hold LMB To Aim & Set Power";
+
+		m_2dRenderer->drawText(m_fontSmall, toolTip.c_str(),
+			WorldToScreen(m_whiteBall->GetPosition()).x + 15,
+			WorldToScreen(m_whiteBall->GetPosition()).y + 15, 1);
+	}
 
 	if (m_playersTurn == 1) m_2dRenderer->drawSprite(m_indicatorTexture, 190, 690, 30, 30, 0, 1);
 	else m_2dRenderer->drawSprite(m_indicatorTexture, 1075, 690, 30, 30, 0, 1);
@@ -514,12 +555,19 @@ void GameScene::SpawnTable()
 	m_kinematics.push_back(new Box(glm::vec2(-86.f, -38.f), 6.f, 6.f, DegreeToRadian(-65), glm::vec2(0), 4.0f, glm::vec4(1, 0, 1, 1)));
 	m_kinematics.push_back(new Box(glm::vec2(-75.5, 29.5), 6.f, 6.f, DegreeToRadian(-60), glm::vec2(0), 4.0f, glm::vec4(1, 0, 1, 1)));
 
+
 	for (auto kinematic : m_kinematics)
 	{
 		kinematic->SetKinematic(true);
 		m_physicsScene->AddActor(kinematic);
 		kinematic->SetColour(glm::vec4(0));
 	}
+
+	m_whiteBallZone = new Box(glm::vec2(60, -9.5), 32.5f, 60.f, 0, glm::vec2(0), 4.0f, glm::vec4(0));
+	m_whiteBallZone->SetTrigger(true);
+	//m_whiteBallZone->SetKinematic(true);
+	m_physicsScene->AddActor(m_whiteBallZone);
+
 }
 
 glm::vec2 GameScene::ScreenToWorld(glm::vec2 screenPos)

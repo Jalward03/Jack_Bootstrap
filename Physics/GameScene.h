@@ -29,8 +29,8 @@ public:
 	void SpawnTable();
 	void SetBallPositions();
 	void AssignBallType();
-	bool HasFinishedGo();
-
+	void PlaceWhiteBall();
+ 
 	glm::vec2 ScreenToWorld(glm::vec2 screenPos);
 	glm::vec2 WorldToScreen(glm::vec2 worldPos);
 
@@ -55,6 +55,8 @@ public:
 	PoolBall* m_whiteBall;
 	PoolBall* m_blackBall;
 	Circle* m_circle;
+	Box* m_whiteBallZone;
+	std::vector<Circle*> m_holes;
 	std::vector<aie::Texture*> m_ballTextures;
 	std::vector<PoolBall*> m_balls;
 	std::vector<PoolBall*> m_stripes;
@@ -63,7 +65,6 @@ public:
 	std::vector<PoolBall*> m_sunkSolids;
 	std::vector<PoolBall*> m_sunkStripes;
 	std::vector<Box*> m_kinematics;
-	std::vector<Circle*> m_holes;
 	float DegreeToRadian(float degree);
 
 	std::string m_PlayerOneColour = "";
@@ -78,5 +79,8 @@ public:
 	bool m_canPlayerOneWin = false;
 	bool m_canPlayerTwoWin = false;
 	bool m_gameWon = false;
+	bool m_whiteBallSunk = false;
+	bool m_isWhiteInZone;
+	bool m_firstShotTaken = false;
 	
 };

@@ -7,7 +7,7 @@ int main() {
 	auto app = new GameScene();
 
 	// initialise and loop
-	app->run("AIE", 1280, 720, false);
+	app->run("8-Ball Pool", 1280, 720, false);
 
 	// deallocation
 	delete app;
