@@ -32,6 +32,7 @@ public:
 	float GetMoment() { return m_isKinematic ? INT_MAX : m_moment; }
 	//Setters
 	void SetVelocity(glm::vec2 vel) { m_velocity = vel; }
+	void SetAngularVelocity(float angVel) { m_angularVelocity = angVel; }
 	void SetPosition(glm::vec2 pos) { m_position = pos; }
 	void SetElasticity(float elasticity) { m_elasticity = elasticity; }
 	void CalculateAxes();

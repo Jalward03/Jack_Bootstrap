@@ -8,6 +8,7 @@
 #include "Circle.h"
 #include "Box.h"
 #include "Rigidbody.h"
+#include "PoolBall.h"
 #include <string>
 
 class PhysicsScene;
@@ -28,7 +29,6 @@ public:
 	void SpawnTable();
 	void SetBallPositions();
 	void AssignBallType();
-
 	bool HasFinishedGo();
 
 	glm::vec2 ScreenToWorld(glm::vec2 screenPos);
@@ -52,26 +52,31 @@ protected:
 	glm::vec2 whiteStartPos = glm::vec2(41, -9);
 
 public:
-	Circle* m_whiteBall;
-	Circle* m_blackBall;
+	PoolBall* m_whiteBall;
+	PoolBall* m_blackBall;
 	Circle* m_circle;
 	std::vector<aie::Texture*> m_ballTextures;
-	std::vector<Circle*> m_balls;
-	std::vector<Circle*> m_stripes;
-	std::vector<Circle*> m_solids;
-	std::vector<Circle*> m_sunk;
-	std::vector<Circle*> m_sunkSolids;
-	std::vector<Circle*> m_sunkStripes;
+	std::vector<PoolBall*> m_balls;
+	std::vector<PoolBall*> m_stripes;
+	std::vector<PoolBall*> m_solids;
+	std::vector<PoolBall*> m_sunk;
+	std::vector<PoolBall*> m_sunkSolids;
+	std::vector<PoolBall*> m_sunkStripes;
 	std::vector<Box*> m_kinematics;
 	std::vector<Circle*> m_holes;
 	float DegreeToRadian(float degree);
 
 	std::string m_PlayerOneColour = "";
 	std::string m_PlayerTwoColour = "";
-
+	std::string m_winner = "";
 	int m_shotsleft = 1;
 	int m_playersTurn;
+
 	bool m_ballTypeAssigned;
 	bool m_readyToShoot;
 	bool m_changeTurn = false;
+	bool m_canPlayerOneWin = false;
+	bool m_canPlayerTwoWin = false;
+	bool m_gameWon = false;
+	
 };

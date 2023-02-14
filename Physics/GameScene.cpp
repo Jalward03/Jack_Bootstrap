@@ -53,22 +53,22 @@ bool GameScene::startup()
 
 	for (int i = 0; i < 7; i++)
 	{
-		Circle* circle = new Circle(glm::vec2(0), glm::vec2(0), 4, 3, glm::vec4(0, 0, 0, 0));
+		PoolBall* circle = new PoolBall(glm::vec2(0), glm::vec2(0), 4, 3, glm::vec4(0, 0, 0, 0));
 		m_solids.push_back(circle);
 		m_balls.push_back(circle);
 	}
 
 	for (int i = 0; i < 7; i++)
 	{
-		Circle* circle = new Circle(glm::vec2(0), glm::vec2(0), 4, 3, glm::vec4(0, 0, 0, 0));
-		m_stripes.push_back(circle);
-		m_balls.push_back(circle);
+		PoolBall* poolBall = new PoolBall(glm::vec2(0), glm::vec2(0), 4, 3, glm::vec4(0, 0, 0, 0));
+		m_stripes.push_back(poolBall);
+		m_balls.push_back(poolBall);
 	}
 
 
 
-	m_whiteBall = new Circle(whiteStartPos, glm::vec2(0), 3.5f, 3.f, glm::vec4(0, 0, 0, 0));
-	m_blackBall = new Circle(glm::vec2(0), glm::vec2(0), 4, 3, glm::vec4(0, 0, 0, 0));
+	m_whiteBall = new PoolBall(whiteStartPos, glm::vec2(0), 3.5f, 3.f, glm::vec4(0, 0, 0, 0));
+	m_blackBall = new PoolBall(glm::vec2(0), glm::vec2(0), 4, 3, glm::vec4(0, 0, 0, 0));
 
 
 	SpawnTable();
@@ -94,35 +94,97 @@ bool GameScene::startup()
 			{
 				m_whiteBall->SetVelocity(glm::vec2(0));
 				m_whiteBall->SetPosition(whiteStartPos);
+				m_playersTurn == 1 ? m_playersTurn = 2 : m_playersTurn = 1;
+				m_shotsleft = 0;
+				m_shotsleft++;
+				m_shotsleft++;
+
+
+			}
+			if (other == m_blackBall)
+			{
+				m_blackBall->SetVelocity(glm::vec2(0));
+				m_blackBall->SetTrigger(true)
+					;
+				if (m_playersTurn == 1)
+				{
+					if (m_canPlayerOneWin)
+					{
+						m_winner = "Player 1 Wins!";
+						
+					}
+					else if (!m_canPlayerOneWin || !m_ballTypeAssigned)
+					{
+						m_winner = "Player 2 Wins!";
+					}
+					
+				}
+				else if (m_playersTurn == 2)
+				{
+					if (m_canPlayerTwoWin)
+					{
+						m_winner = "Player 2 Wins!";
+						
+					}
+					else if (!m_canPlayerTwoWin || !m_ballTypeAssigned)
+					{
+						m_winner = "Player 1 Wins!";
+					}
+				}
+				m_gameWon = true;
 			}
 
 			for (auto solid : m_solids)
 			{
 				if (other == solid)
 				{
-
 					m_sunk.push_back(solid);
-					if (m_PlayerOneColour == "Solid" && m_playersTurn == 1) m_shotsleft++;
-					if (m_PlayerTwoColour == "Solid" && m_playersTurn == 2) m_shotsleft++;
+					if (m_playersTurn == 1)
+					{
+						if (m_PlayerOneColour == "Solid" && !m_ballTypeAssigned)
+						{
+							m_shotsleft++;
+						}
+					}
 
+					else if (m_playersTurn == 2)
+					{
+						if (m_PlayerTwoColour == "Solid" && !m_ballTypeAssigned)
+							m_shotsleft++;
+						
+					}
+						
 				}
 			}
 			for (auto stripe : m_stripes)
 			{
+
 				if (other == stripe)
 				{
 					m_sunk.push_back(stripe);
-					if (m_PlayerOneColour == "Stripe" && m_playersTurn == 1) m_shotsleft++;
-					if (m_PlayerTwoColour == "Stripe" && m_playersTurn == 2) m_shotsleft++;
-
+					if (m_playersTurn == 1)
+					{
+						if (m_PlayerOneColour == "Stripe" || !m_ballTypeAssigned)
+						{
+							m_shotsleft++;
+						}
+					}
+						
+					else if (m_playersTurn == 2)
+					{
+						if(m_PlayerTwoColour == "Stripe" || !m_ballTypeAssigned)
+							m_shotsleft++;
+					}
+						
 				}
+
 			}
 
 		};
-		trigger->triggerExit = [=](PhysicsObject* other)
+	/*	trigger->triggerExit = [=](PhysicsObject* other)
 		{
 			std::cout << "lmao" << std::endl;
-		};
+		};*/
 	}
 
 	return true;
@@ -136,21 +198,56 @@ void GameScene::shutdown()
 
 void GameScene::update(float deltaTime)
 {
-
-	aie::Input* input = aie::Input::getInstance();
-
-
-	m_physicsScene->Update(deltaTime);
-	if (m_sunk.size() > 0 && !m_ballTypeAssigned)
+	for (auto sunk : m_sunk)
 	{
-		AssignBallType();
-
+		sunk->SetSunk(true);
+		sunk->SetTrigger(true);
+		sunk->SetKinematic(true);
+		sunk->SetVelocity(glm::vec2(0));
+		sunk->SetAngularVelocity(0);
 
 	}
 
+	if (m_sunk.size() > 0 && !m_ballTypeAssigned)
+	{
+		AssignBallType();
+	}
+	aie::Input* input = aie::Input::getInstance();
 
 
-	if (input->isMouseButtonDown(0) && m_whiteBall->GetVelocity() == glm::vec2(0))
+
+	m_physicsScene->Update(deltaTime);
+
+	//if (input->wasKeyPressed(aie::INPUT_KEY_R) && m_gameWon)
+	//{
+	//	
+	//}
+
+	if (m_sunkSolids.size() > 6)
+	{
+		if (m_PlayerOneColour == "Solid")
+		{
+			m_canPlayerOneWin = true;
+		}
+		else if (m_PlayerTwoColour == "Solid")
+		{
+			m_canPlayerOneWin = true;
+		}
+	}
+
+	if (m_sunkStripes.size() > 6)
+	{
+		if (m_PlayerOneColour == "Stripe")
+		{
+			m_canPlayerOneWin = true;
+		}
+		else if (m_PlayerTwoColour == "Stripe")
+		{
+			m_canPlayerOneWin = true;
+		}
+	}
+
+	if (input->isMouseButtonDown(0) && m_whiteBall->GetVelocity() == glm::vec2(0) && !m_gameWon)
 	{
 		glm::vec2 mousePos = glm::vec2(input->getMouseX(), input->getMouseY());
 		glm::vec2 whitePos = m_whiteBall->GetPosition();
@@ -169,7 +266,7 @@ void GameScene::update(float deltaTime)
 
 	}
 
-	if (input->wasMouseButtonReleased(0) && m_whiteBall->GetVelocity() == glm::vec2(0))
+	if (input->wasMouseButtonReleased(0) && m_whiteBall->GetVelocity() == glm::vec2(0) && !m_gameWon)
 	{
 		m_shotsleft--;
 		glm::vec2 mousePos = glm::vec2(input->getMouseX(), input->getMouseY());
@@ -192,53 +289,63 @@ void GameScene::update(float deltaTime)
 
 	for (int i = 0; i < m_sunk.size(); i++)
 	{
-		
-
-		for (auto solid : m_solids)
+		if (m_sunk[i]->GetSunk())
 		{
-			if (solid == m_sunk[i])
+			for (auto solid : m_solids)
 			{
-				m_sunkSolids.push_back(solid);
+				if (solid == m_sunk[i] && !solid->GetSunkTriggered())
+				{
+					m_sunkSolids.push_back(solid);
+					solid->SetSunkTriggered(true);
+				}
+			}
 
+			for (auto stripe : m_stripes)
+			{
+				if (stripe == m_sunk[i] && !stripe->GetSunkTriggered())
+				{
+
+					m_sunkStripes.push_back(stripe);
+					stripe->SetSunkTriggered(true);
+				}
 			}
 		}
 
-		for (auto stripe : m_stripes)
-		{
-			if (stripe == m_sunk[i])
-			{
-				m_sunkStripes.push_back(stripe);
-			}
-		}
 	}
+
+
 	for (int i = 0; i < m_sunkSolids.size(); i++)
 	{
-		//m_sunkSolids[i]->SetTrigger(true);
-		//m_sunkSolids[i]->SetVelocity(glm::vec2(0));
+
 		if (m_PlayerOneColour == "Solid")
 		{
 			m_sunkSolids[i]->SetPosition(glm::vec2(-95 + i * 6.f, 42));
-			
+
 		}
 		else if (m_PlayerTwoColour == "Solid")
 		{
 			m_sunkSolids[i]->SetPosition(glm::vec2(95 - i * 6.f, 42));
+
 		}
+
+
 	}
+
 	for (int i = 0; i < m_sunkStripes.size(); i++)
 	{
-		//m_sunkStripes[i]->SetTrigger(true);
-		//m_sunkStripes[i]->SetVelocity(glm::vec2(0));
-
 		if (m_PlayerOneColour == "Stripe")
 		{
 			m_sunkStripes[i]->SetPosition(glm::vec2(-95 + i * 6.f, 42));
+
+
 		}
 		else if (m_PlayerTwoColour == "Stripe")
 		{
 			m_sunkStripes[i]->SetPosition(glm::vec2(95 - i * 6.f, 42));
+
+
 		}
-		
+
 	}
 
 }
@@ -272,6 +379,12 @@ void GameScene::draw()
 
 	m_2dRenderer->drawText(m_font, "Player 1", 10, 680, 1);
 	m_2dRenderer->drawText(m_font, "Player 2", 1120, 680, 1);
+
+	if (m_gameWon)
+	{
+		m_2dRenderer->drawText(m_font, m_winner.c_str(), 520, 680, 1);
+
+	}
 
 	if (m_ballTypeAssigned)
 	{
@@ -443,7 +556,6 @@ glm::vec2 GameScene::WorldToScreen(glm::vec2 worldPos)
 
 	return screenPos;
 }
-
 
 float GameScene::DegreeToRadian(float degree)
 {
