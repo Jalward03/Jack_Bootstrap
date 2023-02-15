@@ -29,18 +29,16 @@ bool GameScene::startup()
 	aie::Gizmos::create(225U, 225U, 65535U, 65535U);
 
 	m_2dRenderer = new aie::Renderer2D();
-	// TODO: remember to change this when redistributing a build!
-	// the following path would be used instead: "./font/consolas.ttf"
-	m_font = new aie::Font("../bin/font/consolas.ttf", 32);
-	m_fontSmall = new aie::Font("../bin/font/consolas.ttf", 16);
-	m_texture = new aie::Texture("../bin/textures/poolTable.png");
-	m_whiteBallTexture = new aie::Texture("../bin/textures/ball_16.png");
-	m_indicatorTexture = new aie::Texture("../bin/textures/moveIndicator.png");
+	m_font = new aie::Font("./font/consolas.ttf", 32);
+	m_fontSmall = new aie::Font("./font/consolas.ttf", 16);
+	m_texture = new aie::Texture("./textures/poolTable.png");
+	m_whiteBallTexture = new aie::Texture("./textures/ball_16.png");
+	m_indicatorTexture = new aie::Texture("./textures/moveIndicator.png");
 
 	for (int i = 0; i < 15; i++)
 	{
 
-		std::string temp = "../bin/textures/ball_";
+		std::string temp = "./textures/ball_";
 		temp = temp.append(std::to_string(i + 1));
 		temp = temp.append(".png");
 		m_ballTextures.push_back(new aie::Texture(temp.c_str()));
@@ -93,6 +91,8 @@ bool GameScene::startup()
 			if (other == m_whiteBall && !m_whiteBallSunk)
 			{
 				m_whiteBallSunk = true;
+				m_isWhiteInZone = false;
+				m_whiteBall->SetTrigger(true);
 				m_playersTurn == 1 ? m_playersTurn = 2 : m_playersTurn = 1;
 				m_shotsleft = 0;
 				m_shotsleft++;
@@ -107,11 +107,15 @@ bool GameScene::startup()
 					if (m_canPlayerOneWin)
 					{
 						m_winner = "Player 1 Wins!";
+						m_gameWon = true;
+						return;
 						
 					}
 					else if (!m_canPlayerOneWin || !m_ballTypeAssigned)
 					{
 						m_winner = "Player 2 Wins!";
+						m_gameWon = true;
+						return;
 					}
 					
 				}
@@ -120,14 +124,18 @@ bool GameScene::startup()
 					if (m_canPlayerTwoWin)
 					{
 						m_winner = "Player 2 Wins!";
+						m_gameWon = true;
+						return;
 						
 					}
 					else if (!m_canPlayerTwoWin || !m_ballTypeAssigned)
 					{
 						m_winner = "Player 1 Wins!";
+						m_gameWon = true;
+						return;
+
 					}
 				}
-				m_gameWon = true;
 			}
 
 			for (auto solid : m_solids)
@@ -180,23 +188,6 @@ bool GameScene::startup()
 
 	}
 
-	m_whiteBallZone->triggerEnter = [=](PhysicsObject* other)
-	{
-		if (other == m_whiteBall)
-		{
-			m_isWhiteInZone = true;
-		}
-	};
-
-	m_whiteBallZone->triggerExit = [=](PhysicsObject* other)
-	{
-		if (other == m_whiteBall)
-		{
-			m_isWhiteInZone = false;
-		}
-
-	};
-
 
 	return true;
 }
@@ -225,8 +216,16 @@ void GameScene::update(float deltaTime)
 	}
 	aie::Input* input = aie::Input::getInstance();
 
-
-
+	if (m_whiteBall->GetPosition().x > 41 && m_whiteBall->GetPosition().x < 78.8 && m_whiteBall->GetPosition().y < 22.33 && m_whiteBall->GetPosition().y > -41.25
+		&& m_whiteBallSunk)
+	{
+		m_isWhiteInZone = true;
+	}
+	else
+	{
+		m_isWhiteInZone = false;
+	}
+	
 	m_physicsScene->Update(deltaTime);
 
 
@@ -256,22 +255,21 @@ void GameScene::update(float deltaTime)
 
 	if (m_whiteBallSunk)
 	{
-		m_whiteBall->SetTrigger(true);
+		
 		glm::vec2 mousePos = glm::vec2(input->getMouseX(), input->getMouseY());
 		m_whiteBall->SetPosition(ScreenToWorld(mousePos));
 
 		if (input->wasMouseButtonPressed(1) && m_isWhiteInZone)
 		{
+			m_whiteBallSunk = false;
+			m_isWhiteInZone = false;
 			m_whiteBall->SetPosition(ScreenToWorld(mousePos));
 			m_whiteBall->SetTrigger(false);
 			m_whiteBall->SetVelocity(glm::vec2(0));
-			m_whiteBallSunk = false;
-			m_isWhiteInZone = false;
-
-
+			 
 		}
 	}
-
+	
 	if (input->isMouseButtonDown(0) && m_whiteBall->GetVelocity() == glm::vec2(0) && !m_whiteBallSunk && !m_gameWon)
 	{
 		glm::vec2 mousePos = glm::vec2(input->getMouseX(), input->getMouseY());
@@ -306,7 +304,7 @@ void GameScene::update(float deltaTime)
 		m_whiteBall->ApplyForce(mouseToWhite * glm::vec2(forceMultiplier), glm::vec2(0));
 
 	}
-
+	
 	if (m_whiteBall->GetVelocity() == glm::vec2(0) && m_shotsleft == 0)
 	{
 		m_playersTurn == 1 ? m_playersTurn = 2 : m_playersTurn = 1;
@@ -378,7 +376,6 @@ void GameScene::update(float deltaTime)
 
 void GameScene::draw()
 {
-	// wipe the screen to the background colour
 	clearScreen();
 
 	m_2dRenderer->begin();
@@ -565,7 +562,7 @@ void GameScene::SpawnTable()
 
 	m_whiteBallZone = new Box(glm::vec2(60, -9.5), 32.5f, 60.f, 0, glm::vec2(0), 4.0f, glm::vec4(0));
 	m_whiteBallZone->SetTrigger(true);
-	//m_whiteBallZone->SetKinematic(true);
+	m_whiteBallZone->SetKinematic(true);
 	m_physicsScene->AddActor(m_whiteBallZone);
 
 }
@@ -574,11 +571,11 @@ glm::vec2 GameScene::ScreenToWorld(glm::vec2 screenPos)
 {
 	glm::vec2 worldPos = screenPos;
 
-	// move the centre of the screen to (0,0)
+
 	worldPos.x -= getWindowWidth() / 2;
 	worldPos.y -= getWindowHeight() / 2;
 
-	// scale according to our extents
+	
 	worldPos.x *= 2.0f * m_extents / getWindowWidth();
 	worldPos.y *= 2.0f * m_extents / (m_aspectRatio * getWindowHeight());
 
@@ -590,7 +587,6 @@ glm::vec2 GameScene::WorldToScreen(glm::vec2 worldPos)
 	glm::vec2 screenPos = worldPos;
 
 
-	// scale according to our extents
 	screenPos.x /= 2.0f;
 	screenPos.x /= m_extents;
 	screenPos.x *= getWindowWidth();
@@ -598,7 +594,7 @@ glm::vec2 GameScene::WorldToScreen(glm::vec2 worldPos)
 	screenPos.y /= m_extents;
 	screenPos.y *= (m_aspectRatio * getWindowHeight());
 
-	// move the centre of the screen to (0,0)
+
 	screenPos.x += getWindowWidth() / 2;
 	screenPos.y += getWindowHeight() / 2;
 

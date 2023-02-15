@@ -80,7 +80,7 @@ public:
 	bool m_canPlayerTwoWin = false;
 	bool m_gameWon = false;
 	bool m_whiteBallSunk = false;
-	bool m_isWhiteInZone;
+	bool m_isWhiteInZone = false;
 	bool m_firstShotTaken = false;
 	
 };
