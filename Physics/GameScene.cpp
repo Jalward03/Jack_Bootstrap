@@ -104,14 +104,14 @@ bool GameScene::startup()
 				m_blackBall->SetTrigger(true);
 				if (m_playersTurn == 1)
 				{
-					if (m_canPlayerOneWin)
+					if (m_canPlayerOneWin || !m_ballTypeAssigned)
 					{
 						m_winner = "Player 1 Wins!";
 						m_gameWon = true;
 						return;
 						
 					}
-					else if (!m_canPlayerOneWin || !m_ballTypeAssigned)
+					else 
 					{
 						m_winner = "Player 2 Wins!";
 						m_gameWon = true;
@@ -121,14 +121,14 @@ bool GameScene::startup()
 				}
 				else if (m_playersTurn == 2)
 				{
-					if (m_canPlayerTwoWin)
+					if (m_canPlayerTwoWin || !m_ballTypeAssigned)
 					{
 						m_winner = "Player 2 Wins!";
 						m_gameWon = true;
 						return;
 						
 					}
-					else if (!m_canPlayerTwoWin || !m_ballTypeAssigned)
+					else
 					{
 						m_winner = "Player 1 Wins!";
 						m_gameWon = true;
@@ -237,7 +237,7 @@ void GameScene::update(float deltaTime)
 		}
 		else if (m_PlayerTwoColour == "Solid")
 		{
-			m_canPlayerOneWin = true;
+			m_canPlayerTwoWin = true;
 		}
 	}
 
@@ -249,7 +249,7 @@ void GameScene::update(float deltaTime)
 		}
 		else if (m_PlayerTwoColour == "Stripe")
 		{
-			m_canPlayerOneWin = true;
+			m_canPlayerTwoWin = true;
 		}
 	}
 
